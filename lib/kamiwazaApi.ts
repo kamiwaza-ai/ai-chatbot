@@ -1,4 +1,4 @@
-const KAMIWAZA_API_URI = process.env.KAMIWAZA_API_URI || 'http://localhost:7777';
+const KAMIWAZA_API_URI = process.env.NEXT_PUBLIC_KAMIWAZA_API_URI || 'http://localhost:7777';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3003';
 
 async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<any> {

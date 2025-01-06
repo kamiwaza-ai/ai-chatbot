@@ -46,3 +46,5 @@ x.sh
 
 certificates
 mkcert-v1.4.4-linux-amd64
+my-compose.yml
+scaffold.sh
