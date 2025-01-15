@@ -9,9 +9,11 @@ import { IconSpinner } from './ui/icons'
 import { getMessageFromCode } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { login, verifyToken } from '@/lib/kamiwazaApi'
+import { useAuth } from '@/lib/auth-context'
 
 export default function LoginForm() {
   const router = useRouter()
+  const { setUser, checkAuth } = useAuth()
   const [result, dispatch] = useFormState(authenticate, undefined)
 
   useEffect(() => {
@@ -39,30 +41,38 @@ export default function LoginForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    console.log('LoginForm: Starting login submission')
     const formData = new FormData(event.currentTarget)
     const username = formData.get('username') as string
     const password = formData.get('password') as string
 
     try {
+      console.log('LoginForm: Calling login API')
       const loginResult = await login(username, password)
       if (loginResult.access_token) {
+        console.log('LoginForm: Got access token, storing tokens')
         // Store in both localStorage and cookies
         localStorage.setItem('access_token', loginResult.access_token)
         if (loginResult.refresh_token) {
           localStorage.setItem('refreshToken', loginResult.refresh_token)
         }
         
-        // Add this line to set the cookie
+        // Set the cookie
         document.cookie = `access_token=${loginResult.access_token}; path=/; max-age=${loginResult.expires_in}`
         
+        console.log('LoginForm: Calling checkAuth')
+        await checkAuth()
+        console.log('LoginForm: checkAuth completed')
+        
         toast.success('Logged in successfully')
-        router.refresh() // Add this to trigger a server-side rerender
+        console.log('LoginForm: Starting navigation')
+        router.refresh()
         router.push('/')
       } else {
         toast.error('Login failed')
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('LoginForm: Login error:', error)
       toast.error('An error occurred during login')
     }
   }

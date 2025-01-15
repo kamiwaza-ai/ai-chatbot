@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 
 export interface UserMenuProps {
   user: UserData
@@ -27,12 +28,23 @@ function getUserInitials(name: string) {
 
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter()
+  const { logout } = useAuth()
 
-  const handleLogout = () => {
-    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    router.push('/login')
+  const handleLogout = async () => {
+    console.log('handleLogout: Starting logout process')
+    try {
+      // Use auth context logout which handles all storage clearing
+      console.log('handleLogout: Calling auth context logout()')
+      await logout()
+      
+      console.log('handleLogout: Refreshing router')
+      router.refresh()
+      console.log('handleLogout: Redirecting to login page')
+      router.push('/login')
+      console.log('handleLogout: Completed logout process')
+    } catch (error) {
+      console.error('handleLogout: Error during logout:', error)
+    }
   }
 
   if (!user || user.username === 'Anonymous User') {
@@ -62,8 +74,18 @@ export function UserMenu({ user }: UserMenuProps) {
             <div className="text-xs text-zinc-500">{user.email}</div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            Log Out of Kamiwaza
+          <DropdownMenuItem asChild>
+            <button
+              className="w-full text-left"
+              onClick={async (e) => {
+                console.log('Logout button: clicked')
+                e.preventDefault()
+                console.log('Logout button: prevented default')
+                await handleLogout()
+              }}
+            >
+              Log Out of Kamiwaza
+            </button>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -85,7 +85,6 @@ export function Chat({ id, className, missingKeys }: ChatProps) {
   // Model selection handler
   const handleModelSelect = useCallback((modelInfo: ModelInfo | null) => {
     if (modelInfo) {
-      console.log('Setting selected model:', modelInfo)
       setSelectedModel(modelInfo)
       setSavedModel(modelInfo)
     }
