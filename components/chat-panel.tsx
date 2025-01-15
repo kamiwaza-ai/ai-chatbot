@@ -97,7 +97,6 @@ export function ChatPanel({
     }
   }
 
-  console.log('ChatPanel selectedModel:', selectedModel); 
 
   return (
     <div className="fixed inset-x-0 bottom-0 w-full bg-background p-4">

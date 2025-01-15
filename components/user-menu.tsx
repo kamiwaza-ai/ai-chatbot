@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 
 export interface UserMenuProps {
   user: UserData
@@ -27,12 +28,16 @@ function getUserInitials(name: string) {
 
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter()
+  const { logout } = useAuth()
 
-  const handleLogout = () => {
-    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    router.push('/login')
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.refresh()
+      router.push('/login')
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
   }
 
   if (!user || user.username === 'Anonymous User') {
@@ -62,8 +67,16 @@ export function UserMenu({ user }: UserMenuProps) {
             <div className="text-xs text-zinc-500">{user.email}</div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            Log Out of Kamiwaza
+          <DropdownMenuItem asChild>
+            <button
+              className="w-full text-left"
+              onClick={async (e) => {
+                e.preventDefault()
+                await handleLogout()
+              }}
+            >
+              Log Out of Kamiwaza
+            </button>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

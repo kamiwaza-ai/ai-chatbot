@@ -104,7 +104,6 @@ export function PromptForm({
     }
   }
 
-  console.log('PromptForm render, selectedModel:', selectedModel);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="w-full">

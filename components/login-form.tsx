@@ -9,9 +9,11 @@ import { IconSpinner } from './ui/icons'
 import { getMessageFromCode } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { login, verifyToken } from '@/lib/kamiwazaApi'
+import { useAuth } from '@/lib/auth-context'
 
 export default function LoginForm() {
   const router = useRouter()
+  const { setUser, checkAuth } = useAuth()
   const [result, dispatch] = useFormState(authenticate, undefined)
 
   useEffect(() => {
@@ -52,11 +54,12 @@ export default function LoginForm() {
           localStorage.setItem('refreshToken', loginResult.refresh_token)
         }
         
-        // Add this line to set the cookie
+        // Set the cookie
         document.cookie = `access_token=${loginResult.access_token}; path=/; max-age=${loginResult.expires_in}`
         
+        await checkAuth()
         toast.success('Logged in successfully')
-        router.refresh() // Add this to trigger a server-side rerender
+        router.refresh()
         router.push('/')
       } else {
         toast.error('Login failed')
