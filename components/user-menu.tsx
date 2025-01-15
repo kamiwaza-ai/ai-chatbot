@@ -31,19 +31,12 @@ export function UserMenu({ user }: UserMenuProps) {
   const { logout } = useAuth()
 
   const handleLogout = async () => {
-    console.log('handleLogout: Starting logout process')
     try {
-      // Use auth context logout which handles all storage clearing
-      console.log('handleLogout: Calling auth context logout()')
       await logout()
-      
-      console.log('handleLogout: Refreshing router')
       router.refresh()
-      console.log('handleLogout: Redirecting to login page')
       router.push('/login')
-      console.log('handleLogout: Completed logout process')
     } catch (error) {
-      console.error('handleLogout: Error during logout:', error)
+      console.error('Error during logout:', error)
     }
   }
 
@@ -78,9 +71,7 @@ export function UserMenu({ user }: UserMenuProps) {
             <button
               className="w-full text-left"
               onClick={async (e) => {
-                console.log('Logout button: clicked')
                 e.preventDefault()
-                console.log('Logout button: prevented default')
                 await handleLogout()
               }}
             >

@@ -32,22 +32,12 @@ export function Chat({ id, className, missingKeys }: ChatProps) {
   const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
   const [savedModel, setSavedModel] = useLocalStorage<ModelInfo | null>('selectedModel', null)
 
-  // Debug logging for auth state
-  useEffect(() => {
-    console.log('Chat auth state:', { 
-      user: user?.id, 
-      loading, 
-      hasMessages: messages?.length > 0 
-    })
-  }, [user, loading, messages])
-
   // Redirect to login if not authenticated
   useEffect(() => {
     const checkAuth = async () => {
       const response = await fetch('/api/allow-anonymous')
       const { allowAnonymous } = await response.json()
       if (!allowAnonymous && !user && !loading) {
-        console.log('Not authenticated, redirecting to login')
         router.push('/login')
         return
       }
